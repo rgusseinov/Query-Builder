@@ -1,5 +1,8 @@
 <?php
 
+require_once 'QueryBuilder.php';
+
+
 class Connection
 {
 	private PDO $pdo;
@@ -19,6 +22,11 @@ class Connection
 		return $stmt;
 	}
 
+	public function table(string $table): QueryBuilder {
+		return (new QueryBuilder($this))->table($table);
+	}
+
+
 	public function fetch(string $sql, array $params = []): ?array {
 		$stmt = $this->prepareAndExecute($sql, $params);
 		$result = $stmt->fetch();
@@ -32,8 +40,6 @@ class Connection
 
 		return $result;
 	}
-
-	// $db->execute("UPDATE users SET name = ?", [$name]);
 
 	public function execute(string $sql, array $params = []): int {
 		$stmt = $this->prepareAndExecute($sql, $params);
@@ -49,13 +55,56 @@ class Connection
 
 }
 
-$db = new Connection("mysql:host=localhost;dbname=app", "app", "secret");
+// $db = new Connection("mysql:host=127.0.0.1;dbname=crm_test", "app", "secret");
 // $res = $db->fetch("select * from users");
 
-$users = $db->fetchAll("SELECT * FROM users WHERE id > 999");
+/* $users = $db->fetchAll("SELECT * FROM users WHERE id > 999");
 
 if (empty($users)) {
     echo "No users";
-}
+} */
 
 // var_dump($res);
+
+$db = new Connection("mysql:host=127.0.0.1;dbname=crm_test", "app", "secret");
+
+/* $result = $db->table('users')
+              ->select(['email', 'full_name'])
+							->where('id', '=', 1)
+							->get(); */
+
+/* $result = $db->table('users')
+            ->where('id', '=', '1')
+            ->first(); */
+
+
+// $result = $db->table('users')->insert([]);
+
+// $sql = "UPDATE users SET full_name = ?, email = ? WHERE id = ?";
+// params = ['Ruslan', 'abc@mail.ru', 1];
+
+$result = $db->table('users')
+            ->where('id', '=', '1')
+            ->update([
+							'full_name' => 'Ruslan111 Gusseinov',
+							'email' => 'new@test.com'
+						]);
+
+print_r($result);
+
+
+// $db->fetchAll("SELECT id, name FROM users WHERE id = ?", [1]);
+
+/*   $db->table('users')
+    ->select(['id', 'name'])
+    ->where('id', '=', 1);
+ */
+
+/* function a(){
+
+	return ['sql' => 'select * from users', 'params' => [1, 2]];
+}
+
+['sql' => $sql, 'params' => $params] = a();
+
+print_r($sql); */
