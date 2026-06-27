@@ -84,11 +84,8 @@ $db = new Connection("mysql:host=127.0.0.1;dbname=crm_test", "app", "secret");
 // params = ['Ruslan', 'abc@mail.ru', 1];
 
 $result = $db->table('users')
-            ->where('id', '=', '1')
-            ->update([
-							'full_name' => 'Ruslan111 Gusseinov',
-							'email' => 'new@test.com'
-						]);
+						->where('password_hash', '<', '800')
+						->first();
 
 print_r($result);
 

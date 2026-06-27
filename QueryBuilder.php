@@ -32,59 +32,18 @@ class QueryBuilder {
     return $this;
   }
 
-  private function buildColumns(): array {
-    return $this->columns;
-  }
-
-  private function buildWheresCondition(): array {
-    $wheres = $this->wheres;
-
-    if (empty($wheres)){
-      return [];
-    }
-
-    return $wheres;
-  }
-
   private function buildSelect(): array {
-      $params = [];
-
       $table = $this->table;
-      $columns = $this->buildColumns();
-      $wheres = $this->buildWheresCondition();
-
+      $columns = $this->columns;
 
       $columnsString = implode(',', $columns);
-      $sql = "SELECT {$columnsString}";
-          
-      $sql .= " FROM {$table}";
+      $sql = "SELECT {$columnsString} FROM {$table}";
 
-      if (!empty($wheres)){
-        $condition = [];
-        
-        foreach ($wheres as $where){
-          $column = $where['column'];
-          $operator = $where['operator'];
-          $value = $where['value'];
+			['sql' => $conditionString, 'params' => $params] = $this->buildWhere();
 
-          $condition[] = "{$column} {$operator} ?";
-          $params[] = $value;
-        }
-
-        $conditionString = implode(' AND ', $condition);
-
-        $sql .= " WHERE {$conditionString}";
-      }
+			$sql .= " WHERE {$conditionString}";
 
       return ['sql' => $sql, 'params' => $params];
-  }
-
-  public function get() {
-    ['sql' => $sql, 'params' => $params] = $this->buildSelect();
-
-    $result = $this->connection->fetchAll($sql, $params);
-
-    return $result;
   }
 
   public function first(): ?array {
@@ -93,6 +52,14 @@ class QueryBuilder {
     return $this->connection->fetch($sql, $params);
   }
 
+	public function get() {
+		['sql' => $sql, 'params' => $params] = $this->buildSelect();
+		$result = $this->connection->fetchAll($sql, $params);
+		
+		return $result;
+	}
+
+	
   private function buildInsert(array $data): array {
     $table = $this->table;
     
@@ -116,50 +83,52 @@ class QueryBuilder {
   }
 
   private function buildUpdate(array $data): array {
-    $table = $this->table;
-    $wheres = $this->buildWheresCondition();
+		$wheres = $this->wheres;
 
     if (empty($wheres)){
-      throw new InvalidArgumentException('Where condition must me specified');
-    }
-
+			throw new InvalidArgumentException('Where condition must me specified');
+		}
+			
+	  $table = $this->table;
+			
     $sql = "";
     $clauses = [];
-    $params = [];
+    $setParams = [];
     
     foreach (array_keys($data) as $key){
       $clauses[] = "{$key} = ?";
 
-      $params[] = $data[$key];
+      $setParams[] = $data[$key];
     }
+		
+    ['sql' => $whereConditionString, 'params' => $params] = $this->buildWhere();
 
-    ['whereCondition' => $whereConditionString, 'whereParams' => $whereParams] = $this->prepareWhereParams($params);
-    
-
+		$params = array_merge($setParams, $params);
+		
     $clausesString = implode(',', $clauses);
     $sql = "UPDATE {$table} SET {$clausesString} WHERE {$whereConditionString}";
 
-    return ['sql' => $sql, 'params' => $whereParams];
+    return ['sql' => $sql, 'params' => $params];
   }
 
-  private function prepareWhereParams(array $params): array {
-    $wheres = $this->buildWheresCondition();
+  private function buildWhere(): array {
+		$wheres = $this->wheres;
 
     $condition = [];
-    $whereConditionString = "";
+		$params = [];
+    $sql = "";
     
     foreach ($wheres as $where){
       $column = $where['column'];
       $operator = $where['operator'];
-      $value = $where['value'];
 
       $condition[] = "{$column} {$operator} ?";
-      $params[] = $value;
+      $params[] = $where['value'];
     }
 
-    $whereConditionString = implode(' AND ', $condition);
+    $sql = implode(' AND ', $condition);
 
-    return ['whereCondition' => $whereConditionString, 'whereParams' => $params];
+    return ['sql' => $sql, 'params' => $params];
   }
 
   public function update(array $data): string|int {
