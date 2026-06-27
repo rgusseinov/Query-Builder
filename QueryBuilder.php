@@ -140,6 +140,14 @@ class QueryBuilder {
 
     return $this->connection->execute($sql, $params);
   }
+
+	public function delete() {
+    ['sql' => $sql, 'params' => $params] = $this->buildWhere();
+
+		print_r($sql); exit;
+
+    return $this->connection->execute($sql, $params);
+	}
 }
 
 /* $db->table('users')->insert([

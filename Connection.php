@@ -84,8 +84,8 @@ $db = new Connection("mysql:host=127.0.0.1;dbname=crm_test", "app", "secret");
 // params = ['Ruslan', 'abc@mail.ru', 1];
 
 $result = $db->table('users')
-						->where('password_hash', '<', '800')
-						->first();
+						->where('password_hash', '=', '777')
+						->delete();
 
 print_r($result);
 
