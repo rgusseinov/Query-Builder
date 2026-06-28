@@ -142,38 +142,17 @@ class QueryBuilder {
   }
 
 	public function delete() {
-    ['sql' => $sql, 'params' => $params] = $this->buildWhere();
+		$wheres = $this->wheres;
 
-		print_r($sql); exit;
+    if (empty($wheres)){
+			throw new InvalidArgumentException('Where condition must me specified');
+		}
+
+	  $table = $this->table;
+    
+    ['sql' => $conditionString, 'params' => $params] = $this->buildWhere();
+    $sql = "DELETE FROM {$table} WHERE {$conditionString}";
 
     return $this->connection->execute($sql, $params);
 	}
 }
-
-/* $db->table('users')->insert([
-    'name' => 'Ruslan',
-    'email' => 'ruslan@test.com',
-    'age' => 37
-]); */
-
-
-/* 
-Case 1:
-table('users')
-
-Case 2:
-table('users')
-  ->select(['id', 'name'])
-
-Case 3:
-table('users')
-  ->select(['id', 'name'])
-  ->where('id', '=', 1)
-
-table('users')
-  ->select(['id', 'name'])
-  ->where('id', '=', 1)
-  ->where('status', '=', 'active')
-              
-              
-              */
