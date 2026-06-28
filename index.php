@@ -1,7 +1,10 @@
 <?php
 
 require_once 'Env.php';
-require_once 'Connection.php';
+require_once './src/Connection.php';
+require_once './src/Model.php';
+
+Model::setContainer(new Container());
 
 Env::load(__DIR__ . '/.env');
 
@@ -14,8 +17,6 @@ $db = new Connection(
 
 $result = $db->table('users')
     ->where('id', '=', 3)
-    ->update([
-        'full_name' => 'Ruslan Gusseinov.'
-    ]);
+    ->get();
 
 print_r($result);
