@@ -9,8 +9,10 @@ abstract class Model {
 	}
 
 	public static function find(int $id){
+		// print_r(get_class_methods(self::$container)); exit;
+		$queryBuilder = self::$container->get(QueryBuilder::class);
 
-		$queryBuilder = self::$container->get(QueryBuilder:class);
 
+		return $queryBuilder->table(static::$table)->where('id', '=', $id)->first();
 	}
 }
