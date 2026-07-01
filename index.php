@@ -29,18 +29,8 @@ $container->singleton(QueryBuilder::class, function ($container) {
 
 Model::setContainer($container);
 
-/* $db = new Connection(
-    "mysql:host=" . Env::get('DB_HOST') .
-    ";dbname=" . Env::get('DB_NAME'),
-    Env::get('DB_USER'),
-    Env::get('DB_PASS')
-); */
+// User::find(5);
 
+$users = User::all();
+echo "<pre>"; print_r($users);
 
-/* $result = $db->table('users')
-    ->where('id', '=', 3)
-    ->get();
-
-print_r($result); */
-
-print_r(User::find(5));

@@ -41,7 +41,9 @@ class QueryBuilder {
 
 			['sql' => $conditionString, 'params' => $params] = $this->buildWhere();
 
-			$sql .= " WHERE {$conditionString}";
+      if (!(empty($conditionString))){
+        $sql .= " WHERE {$conditionString}";
+      }
 
       return ['sql' => $sql, 'params' => $params];
   }
@@ -54,9 +56,8 @@ class QueryBuilder {
 
 	public function get() {
 		['sql' => $sql, 'params' => $params] = $this->buildSelect();
-		$result = $this->connection->fetchAll($sql, $params);
-		
-		return $result;
+
+		return $this->connection->fetchAll($sql, $params);
 	}
 
 	
