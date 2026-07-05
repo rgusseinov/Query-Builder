@@ -28,9 +28,17 @@ $container->singleton(QueryBuilder::class, function ($container) {
 });
 
 Model::setContainer($container);
+// $users = User::all();
 
-// User::find(5);
+/* $result = User::find(5);
+$result->full_name = 'Rus v3';
+$result->save(); */
 
-$users = User::all();
-echo "<pre>"; print_r($users);
+$rand = rand(10, 100);
+$result = new User();
+$result->full_name = 'New user ' . $rand;
+$result->email = $rand . '_glk@mail.ru';
+$result->password_hash = '444';
 
+$result->save();
+print_r($result);
