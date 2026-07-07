@@ -36,6 +36,8 @@ class MigrationRunner {
 						throw new Exception("Migration file {$migrationName} must be Migration instance");
 					}
 
+					$migration->setConnection($this->connection);
+
 					$migration->up();
 
 					$this->markAsExecuted($migrationName);

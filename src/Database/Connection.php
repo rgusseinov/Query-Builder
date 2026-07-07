@@ -15,6 +15,18 @@ class Connection
 		$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 	}
 
+	public function beginTransaction(): void {
+		$this->pdo->beginTransaction();
+	}
+
+	public function commit(): void {
+		$this->pdo->commit();
+	}
+	
+	public function rollback(): void {
+		$this->pdo->rollBack();
+	}
+
 	private function prepareAndExecute(string $sql, array $params): PDOStatement {
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->execute($params);
