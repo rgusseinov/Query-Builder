@@ -2,9 +2,9 @@
 
 require_once 'Env.php';
 require_once './src/Core/Container.php';
-require_once './src/Connection.php';
-require_once './src/Model.php';
-require_once './src/User.php';
+require_once './src/Database/Connection.php';
+require_once './src/Database/Model.php';
+require_once './src/Model/User.php';
 
 $container = new Container();
 
@@ -34,11 +34,17 @@ Model::setContainer($container);
 $result->full_name = 'Rus v3';
 $result->save(); */
 
-$rand = rand(10, 100);
+/* $rand = rand(10, 100);
 $result = new User();
 $result->full_name = 'New user ' . $rand;
 $result->email = $rand . '_glk@mail.ru';
 $result->password_hash = '444';
 
 $result->save();
-print_r($result);
+print_r($result); */
+
+
+$result = User::find(1);
+$posts = $result->posts();
+
+echo '<pre>'; print_r($posts);

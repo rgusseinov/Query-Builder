@@ -10,6 +10,15 @@ class User extends Model
         'created_at'
     ];
 
+
+    public function posts(){
+        $queryBuilder = self::$container->get(QueryBuilder::class);
+
+        $posts = $queryBuilder->table('posts')->where('user_id', '=', $this->attributes['id'])->get();
+
+        return $posts;
+    } 
+
 }
 
 
