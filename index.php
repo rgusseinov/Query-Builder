@@ -4,6 +4,7 @@ require_once 'Env.php';
 require_once './src/Core/Container.php';
 require_once './src/Database/Connection.php';
 require_once './src/Database/Model.php';
+require_once './src/Model/Post.php';
 require_once './src/Model/User.php';
 
 $container = new Container();

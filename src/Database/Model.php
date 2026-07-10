@@ -70,4 +70,20 @@ abstract class Model {
 
 		return $queryBuilder->table(static::$table)->get();
 	}
+
+	protected function hasMany(string $relatedModel, string $foreignKey = '', string $localKey = 'id'){
+		$table = $relatedModel::getTableName();
+		$field = !empty($foreignKey) ? $foreignKey : strtolower(get_class($this)) . '_id';
+
+		$queryBuilder = self::$container->get(QueryBuilder::class);
+
+		$posts = $queryBuilder->table($table)->where($field, '=', $this->attributes['id'])->get();
+
+		return $posts;
+	}
+
+	public static function getTableName(): string {
+		return static::$table;
+	}
+
 }
