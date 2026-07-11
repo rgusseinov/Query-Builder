@@ -11,7 +11,7 @@ $container = new Container();
 
 Env::load(__DIR__ . '/.env');
 
-$container->singleton(Connection::class, function () {
+$container->bind(Connection::class, function () {
     // здесь создать Connection с Env
 
     return new Connection(
@@ -23,7 +23,7 @@ $container->singleton(Connection::class, function () {
 
 });
 
-$container->singleton(QueryBuilder::class, function ($container) {
+$container->bind(QueryBuilder::class, function ($container) {
     // здесь создать QueryBuilder и передать Connection
     return new QueryBuilder($container->get(Connection::class));
 });
@@ -45,7 +45,16 @@ $result->save();
 print_r($result); */
 
 
-$result = User::find(1);
-$posts = $result->posts();
+/* $result = Post::find(10);
+$user = $result->user();
+echo '<pre>'; print_r($user); */
 
-echo '<pre>'; print_r($posts);
+$queryBuilder = $container->get('queryBuilder');
+
+$r = $queryBuilder
+    ->table('posts')
+    ->whereIn('user_id', [1, 2, 3])
+    // ->where('id', '=', '5')
+    ->get();
+
+echo '<pre>'; print_r($r);

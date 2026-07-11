@@ -24,9 +24,12 @@ class QueryBuilder {
 
   public function where(string $column, string $operator, mixed $value): self {
     $this->wheres[] = [
-      'column' => $column,
-      'operator' => $operator,
-      'value' => $value
+      'type' => 'basic',
+      'data' => [
+        'column' => $column,
+        'operator' => $operator,
+        'value' => $value
+      ]
     ];
 
     return $this;
@@ -117,14 +120,27 @@ class QueryBuilder {
 
     $condition = [];
 		$params = [];
-    $sql = "";
-    
-    foreach ($wheres as $where){
-      $column = $where['column'];
-      $operator = $where['operator'];
 
-      $condition[] = "{$column} {$operator} ?";
-      $params[] = $where['value'];
+    foreach ($wheres as $where){
+      $type = $where['type'];
+      $data = $where['data'];
+
+      $column = $data['column'];
+      $operator = $data['operator'];
+      $value = $data['value'];
+
+      switch ($type){
+        case 'basic':
+          $condition[] = "{$column} {$operator} ?";
+          $params[] = $value;
+          break;
+        case 'in':
+          $placeholders = implode(',', array_fill(0, count($value), '?'));
+
+          $condition[] = "{$column} IN ($placeholders)";
+          $params = [...$params, ...$value];
+          break;
+      }
     }
 
     $sql = implode(' AND ', $condition);
@@ -156,4 +172,17 @@ class QueryBuilder {
 
     return $this->connection->execute($sql, $params);
 	}
+  
+  public function whereIn(string $column, array $values): self {
+    $this->wheres[] = [
+      'type' => 'in',
+      'data' => [
+        'column' => $column,
+        'operator' => null,
+        'value' => $values
+      ]
+    ];
+    
+    return $this;
+  }
 }

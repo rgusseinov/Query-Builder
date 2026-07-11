@@ -82,6 +82,14 @@ abstract class Model {
 		return $posts;
 	}
 
+	protected function belongsTo(string $relatedModel, string $foreignKey = '', string $ownerKey = 'id'){	
+		$field = !empty($foreignKey) ? $foreignKey : strtolower($relatedModel) . '_id';
+
+		$id = $this->attributes[$field];
+
+		return $relatedModel::find($id);
+	}
+
 	public static function getTableName(): string {
 		return static::$table;
 	}
