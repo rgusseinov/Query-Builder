@@ -6,6 +6,7 @@ abstract class Model {
 	protected array $attributes = [];
 	protected array $fillable;
 	protected static $container;
+	protected ?string $relation = null;
 
 	public static function setContainer($container){
 		self::$container = $container;
@@ -93,5 +94,25 @@ abstract class Model {
 	public static function getTableName(): string {
 		return static::$table;
 	}
+
+	public static function with(string $relation): self {
+    $model = new static();
+
+		$model->relation = $relation;
+		// сохранить relation
+			
+		$table = $model::getTableName();
+		$queryBuilder = self::$container->get(QueryBuilder::class);
+
+		$rows = $queryBuilder->table($table)->get();
+
+		$objects = array_map(function() use ($model){
+			return $model;
+		}, $rows);
+
+		// echo "<pre>";print_r($objects); exit;
+
+		return $model;
+  }
 
 }

@@ -51,10 +51,13 @@ echo '<pre>'; print_r($user); */
 
 $queryBuilder = $container->get('queryBuilder');
 
-$r = $queryBuilder
+/* $r = $queryBuilder
     ->table('posts')
     ->whereIn('user_id', [1, 2, 3])
     // ->where('id', '=', '5')
-    ->get();
+    ->get(); */
 
-echo '<pre>'; print_r($r);
+
+$users = User::with('posts')->get();
+
+echo '<pre>'; print_r($users);
