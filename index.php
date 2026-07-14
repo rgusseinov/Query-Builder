@@ -58,6 +58,16 @@ $queryBuilder = $container->get('queryBuilder');
     ->get(); */
 
 
+// $users = User::with('posts')->get();
+// echo '<pre>'; print_r($users);
+
+
 $users = User::with('posts')->get();
 
-echo '<pre>'; print_r($users);
+foreach ($users as $user) {
+    echo $user->full_name . PHP_EOL;
+
+    foreach ($user->posts as $post) {
+        echo " - {$post['title']}" . PHP_EOL;
+    }
+}

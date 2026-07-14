@@ -7,6 +7,7 @@ abstract class Model {
 	protected array $fillable;
 	protected static $container;
 	protected ?string $relation = null;
+	protected array $relations = [];
 
 	public static function setContainer($container){
 		self::$container = $container;
@@ -22,6 +23,10 @@ abstract class Model {
 	public function __get(string $name){
 		if (array_key_exists($name, $this->attributes)){
 			return $this->attributes[$name];
+		}
+
+		if (array_key_exists($name, $this->relations)){
+			return $this->relations[$name];
 		}
 
 		throw new Exception("Property {$name} does not exist.");
@@ -97,22 +102,43 @@ abstract class Model {
 
 	public static function with(string $relation): self {
     $model = new static();
-
 		$model->relation = $relation;
-		// сохранить relation
-			
-		$table = $model::getTableName();
-		$queryBuilder = self::$container->get(QueryBuilder::class);
-
-		$rows = $queryBuilder->table($table)->get();
-
-		$objects = array_map(function() use ($model){
-			return $model;
-		}, $rows);
-
-		// echo "<pre>";print_r($objects); exit;
 
 		return $model;
   }
 
+	public function get(): array {
+		$table = static::$table;
+
+		$queryBuilder = self::$container->get(QueryBuilder::class);
+		$rows = $queryBuilder->table($table)->get();
+
+		$objects = array_map(function($row){
+			$childClassInstance = new static();
+			$childClassInstance->setAttributes($row);
+
+			return $childClassInstance;
+		}, $rows);
+
+		if ($this->relation !== null) {
+				// eager loading
+			$ids = array_map(fn($user) => $user->id, $objects);
+			$relationRecords = $queryBuilder->table($this->relation)->whereIn("user_id", $ids)->get();
+
+			$postsGroupedByUsers = [];
+			
+			foreach ($relationRecords as $rel){
+				$postsGroupedByUsers[$rel['user_id']][] = $rel;
+			}
+
+			foreach ($objects as $user) {
+					$user->setRelation('posts', $postsGroupedByUsers[$user->id] ?? []);
+			}
+		}
+		return $objects;
+	}
+
+	public function setRelation(string $name, mixed $value): void {
+		$this->relations[$name] = $value;
+	}
 }
