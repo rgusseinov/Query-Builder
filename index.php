@@ -6,6 +6,8 @@ require_once './src/Database/Connection.php';
 require_once './src/Database/Model.php';
 require_once './src/Model/Post.php';
 require_once './src/Model/User.php';
+require_once './src/Model/Company.php';
+require_once './src/Model/Employee.php';
 
 $container = new Container();
 
@@ -62,7 +64,7 @@ $queryBuilder = $container->get('queryBuilder');
 // echo '<pre>'; print_r($users);
 
 
-$users = User::with('posts')->get();
+/* $users = User::with('posts')->get();
 
 foreach ($users as $user) {
     echo $user->full_name . PHP_EOL;
@@ -70,4 +72,27 @@ foreach ($users as $user) {
     foreach ($user->posts as $post) {
         echo " - {$post['title']}" . PHP_EOL;
     }
-}
+} */
+
+//
+
+/* $result = new Company;
+$result->name = 'Coca-Cola';
+$result->save(); */
+
+/* $result = new Employee;
+$result->full_name = 'Conor';
+$result->position = 'Manager';
+$result->salary = 500000;
+$result->company_id = 1;
+
+$result->save(); */
+
+/* $result = Employee::find(1);
+$user = $result->company();
+echo '<pre>'; print_r($user); */
+
+
+/* $result = Company::find(1);
+$data = $result->employees();
+echo '<pre>'; print_r($data); */
